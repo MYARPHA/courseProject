@@ -1,0 +1,41 @@
+﻿@model courseProject.Models.Service
+@{
+    ViewData["Title"] = "Удаление услуги";
+}
+
+<div class="page-header">
+    <h1 class="page-title text-danger"><i class="fas fa-trash-alt me-2"></i> Удаление</h1>
+</div>
+
+<div class="card border-danger">
+    <div class="card-body">
+        <h4 class="text-danger">Вы уверены, что хотите удалить эту услугу?</h4>
+        <hr />
+
+        <dl class="row">
+            <dt class="col-sm-3 fw-bold text-muted">Название</dt>
+            <dd class="col-sm-9">@Model.ServicesTitle</dd>
+
+            <dt class="col-sm-3 fw-bold text-muted">Цена</dt>
+            <dd class="col-sm-9 text-success fw-bold">@Model.Price ₽</dd>
+
+            <dt class="col-sm-3 fw-bold text-muted">Описание</dt>
+            <dd class="col-sm-9">@Model.Description</dd>
+
+            <dt class="col-sm-3 fw-bold text-muted">Категория</dt>
+            <dd class="col-sm-9">
+                <span class="badge-category">@Model.Category.CategoryTitle</span>
+            </dd>
+        </dl>
+
+        <form asp-action="Delete" class="mt-4">
+            <input type="hidden" asp-for="ServicesId" />
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash me-2"></i> Удалить
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary back-link">
+                <i class="fas fa-arrow-left me-2"></i> Отмена
+            </a>
+        </form>
+    </div>
+</div>
