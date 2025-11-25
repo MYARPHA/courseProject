@@ -1,4 +1,5 @@
 appsettings.json
+./appsettings.json
 .git
 bin/
 obj/
