@@ -1,26 +1,21 @@
 ﻿@model courseProject.Models.Service
 @{
-    ViewData["Title"] = Model.ServicesId == 0 ? "Создание услуги" : "Редактирование услуги";
+    ViewData["Title"] = "Создание услуги";
 }
 
 <div class="page-header">
     <h1 class="page-title">
-        <i class="fas fa-@(Model.ServicesId == 0 ? "plus-circle" : "edit") me-2"></i>
-        @ViewData["Title"]
+        <i class="fas fa-plus-circle me-2"></i> Создание услуги
     </h1>
 </div>
 
 <div class="card">
     <div class="card-body p-4">
-        <form asp-action="@(Model.ServicesId == 0 ? "Create" : "Edit")">
+        <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-            @if (Model.ServicesId != 0)
-            {
-                <input type="hidden" asp-for="ServicesId" />
-            }
 
             <div class="mb-3">
-                <label asp-for="ServicesTitle" class="form-label"></label>
+                <label asp-for="ServicesTitle" class="form-label">Название услуги</label>
                 <input asp-for="ServicesTitle" class="form-control" placeholder="Введите название услуги" />
                 <span asp-validation-for="ServicesTitle" class="text-danger"></span>
             </div>
@@ -45,7 +40,7 @@
 
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save me-2"></i> @(Model.ServicesId == 0 ? "Создать" : "Сохранить")
+                    <i class="fas fa-save me-2"></i> Создать
                 </button>
                 <a asp-action="Index" class="btn btn-outline-secondary back-link">
                     <i class="fas fa-arrow-left me-2"></i> Назад к списку
@@ -56,7 +51,5 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
