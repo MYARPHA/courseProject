@@ -1,0 +1,63 @@
+@model courseProject.Models.User
+@{
+    ViewData["Title"] = "Редактирование профиля";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Редактировать профиль</h1>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input class="form-control" value="@Model.Email" disabled />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label">Имя</label>
+                <input asp-for="FullName" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Выбрать аватар (локально)</label>
+                <div class="d-flex gap-2" id="avatarChoices">
+                    <button type="button" class="btn btn-light avatar-choice" data-avatar="🧾">🧾</button>
+                    <button type="button" class="btn btn-light avatar-choice" data-avatar="📊">📊</button>
+                    <button type="button" class="btn btn-light avatar-choice" data-avatar="🧑‍💼">🧑‍💼</button>
+                    <button type="button" class="btn btn-light avatar-choice" data-avatar="👩‍💼">👩‍💼</button>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-dark">Сохранить</button>
+                <a asp-action="Profile" class="btn btn-outline-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // show saved avatar selection
+        function renderAvatarPreview() {
+            const avatar = localStorage.getItem('userAvatar') || '👤';
+            // visual hint: highlight selected button if any
+            document.querySelectorAll('.avatar-choice').forEach(b => {
+                b.classList.toggle('active', b.getAttribute('data-avatar') === avatar);
+            });
+        }
+
+        document.querySelectorAll('.avatar-choice').forEach(b => {
+            b.addEventListener('click', () => {
+                const a = b.getAttribute('data-avatar');
+                localStorage.setItem('userAvatar', a);
+                renderAvatarPreview();
+                alert('Аватар сохранён локально');
+            });
+        });
+
+        renderAvatarPreview();
+    </script>
+}

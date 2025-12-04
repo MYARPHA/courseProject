@@ -7,16 +7,16 @@ namespace courseProject.Data;
 
 public partial class AppDbContext : DbContext
 {
-    private readonly string _connectionString;
+    private readonly string? _connectionString;
 
     public AppDbContext()
     {
         var configuration = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
+            .AddJsonFile("appsettings.json", optional: true)
             .Build();
 
-        _connectionString = configuration.GetConnectionString("DefaultConnection");
+        _connectionString = configuration.GetConnectionString("Default");
     }
 
     public AppDbContext(DbContextOptions<AppDbContext> options)
@@ -27,7 +27,10 @@ public partial class AppDbContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseMySQL(_connectionString);
+            if (!string.IsNullOrEmpty(_connectionString))
+            {
+                optionsBuilder.UseMySQL(_connectionString);
+            }
         }
     }
 

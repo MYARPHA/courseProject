@@ -1,0 +1,152 @@
+@{
+    ViewData["Title"] = "Оставить заявку";
+}
+
+<div class="page-header text-center mb-4">
+    <h1 class="page-title">Оставить заявку</h1>
+</div>
+
+<div id="authNotice" class="alert alert-warning d-none">
+    Только авторизованные пользователи могут оставить заявку.
+    <button class="btn btn-primary btn-sm ms-2" id="openLoginBtn">Войти</button>
+</div>
+
+<div id="requestSection" class="d-none">
+    <div class="card">
+        <div class="card-body">
+            <div id="cartContainer">
+                <h5>Ваши услуги</h5>
+                <div id="cartItems"></div>
+                <div class="mt-3">
+                    <strong>Итого: </strong><span id="cartTotal">0</span> ₽
+                </div>
+            </div>
+
+            <hr />
+
+            <form id="requestForm">
+                <div class="mb-3">
+                    <label class="form-label">ФИО</label>
+                    <input type="text" id="customerName" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" id="customerEmail" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Телефон</label>
+                    <input type="text" id="customerPhone" class="form-control" />
+                </div>
+                <button class="btn btn-primary" type="submit">Отправить заявку</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // utilities
+        function getCart() { try { return JSON.parse(localStorage.getItem('cart') || '[]'); } catch { return []; } }
+        function saveCart(c) { localStorage.setItem('cart', JSON.stringify(c)); }
+
+        function isAuthenticatedClient() {
+            const token = localStorage.getItem('authToken');
+            return !!token;
+        }
+
+        function showAuthState() {
+            if (isAuthenticatedClient()) {
+                document.getElementById('authNotice').classList.add('d-none');
+                document.getElementById('requestSection').classList.remove('d-none');
+                // prefill from localStorage if available
+                document.getElementById('customerEmail').value = localStorage.getItem('userEmail') || '';
+                document.getElementById('customerName').value = localStorage.getItem('userFullName') || '';
+            } else {
+                document.getElementById('authNotice').classList.remove('d-none');
+                document.getElementById('requestSection').classList.add('d-none');
+            }
+        }
+
+        document.getElementById('openLoginBtn').addEventListener('click', () => {
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('authModal')).show();
+        });
+
+        function renderCart() {
+            const items = getCart();
+            const container = document.getElementById('cartItems');
+            container.innerHTML = '';
+            let total = 0;
+            if (!items.length) {
+                container.innerHTML = '<p class="text-muted">Корзина пуста. Добавьте услуги на странице "Услуги".</p>';
+            } else {
+                const ul = document.createElement('ul');
+                ul.className = 'list-group mb-2';
+                items.forEach((it, idx) => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    li.innerHTML = `<div>${it.title}</div><div>${it.price} ₽</div>`;
+                    ul.appendChild(li);
+                    total += parseFloat(it.price || 0);
+                });
+                container.appendChild(ul);
+            }
+            document.getElementById('cartTotal').innerText = total.toFixed(2);
+        }
+
+        // submit handler using fetchWithAuth (adds Authorization header from localStorage)
+        document.getElementById('requestForm')?.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            if (!isAuthenticatedClient()) {
+                alert('Требуется авторизация. Пожалуйста, войдите.');
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('authModal')).show();
+                return;
+            }
+
+            const items = getCart();
+            if (!items.length) { alert('Корзина пуста'); return; }
+
+            const dto = {
+                customerName: document.getElementById('customerName').value.trim(),
+                customerEmail: document.getElementById('customerEmail').value.trim(),
+                customerPhone: document.getElementById('customerPhone').value.trim(),
+                items: items.map(i => ({ serviceId: parseInt(i.serviceId), title: i.title, price: parseFloat(i.price) }))
+            };
+
+            try {
+                const fetchFn = (typeof fetchWithAuth === 'function') ? fetchWithAuth : fetch;
+                const res = await fetchFn('/api/requests/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dto)
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    alert('Заявка отправлена. Номер: ' + data.id);
+                    localStorage.removeItem('cart');
+                    renderCart();
+                } else if (res.status === 401) {
+                    alert('Требуется авторизация. Пожалуйста, войдите.');
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('authModal')).show();
+                } else {
+                    alert('Ошибка отправки: ' + (data.message || ''));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Ошибка сети');
+            }
+        });
+
+        // Init
+        renderCart();
+        showAuthState();
+
+        // update UI when user logs in/out via modal (listen to storage events)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'authToken' || e.key === 'userEmail' || e.key === 'userFullName') {
+                showAuthState();
+            }
+        });
+
+    </script>
+}

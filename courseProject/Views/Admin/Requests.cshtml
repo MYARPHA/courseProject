@@ -1,0 +1,75 @@
+@{
+    ViewData["Title"] = "Управление заявками";
+}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <h1 class="page-title">Управление заявками</h1>
+    <div>
+        <a class="btn btn-dark me-2" href="/Requests/ExportExcel">
+            <i class="fas fa-file-excel me-2"></i> Экспорт Excel
+        </a>
+        <a class="btn btn-outline-dark" href="/Requests/Export">
+            <i class="fas fa-file-csv me-2"></i> Экспорт CSV
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div id="requestsContainer">Загрузка...</div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function loadRequests() {
+            const res = await fetch('/api/requests');
+            const data = await res.json();
+            const container = document.getElementById('requestsContainer');
+            if (!data || !data.length) {
+                container.innerHTML = '<p>Заявок нет</p>';
+                return;
+            }
+            let html = `<table class="table"><thead><tr><th>#</th><th>Клиент</th><th>Контакты</th><th>Услуги</th><th>Сумма</th><th>Статус</th><th>Назначен</th><th></th></tr></thead><tbody>`;
+            data.forEach(r => {
+                const items = (r.items || []).map(i => `${i.title} (${i.price}₽)`).join('<br/>');
+                html += `<tr>
+                    <td>${r.id}</td>
+                    <td>${r.customerName}<br/><small>${r.customerEmail}</small></td>
+                    <td>${r.customerPhone || ''}</td>
+                    <td>${items}</td>
+                    <td>${r.total}</td>
+                    <td>
+                        <select class="form-select status-select" data-id="${r.id}">
+                            <option ${r.status==='Новая'?'selected':''}>Новая</option>
+                            <option ${r.status==='В обработке'?'selected':''}>В обработке</option>
+                            <option ${r.status==='Завершена'?'selected':''}>Завершена</option>
+                            <option ${r.status==='Отменена'?'selected':''}>Отменена</option>
+                        </select>
+                    </td>
+                    <td><input class="form-control assign-input" data-id="${r.id}" value="${r.assignedTo || ''}" /></td>
+                    <td><button class="btn btn-sm btn-primary save-btn" data-id="${r.id}">Сохранить</button></td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+
+            document.querySelectorAll('.save-btn').forEach(b => {
+                b.addEventListener('click', async () => {
+                    const id = b.getAttribute('data-id');
+                    const status = document.querySelector('.status-select[data-id="'+id+'"]').value;
+                    const assignedTo = document.querySelector('.assign-input[data-id="'+id+'"]').value;
+                    await fetch('/api/requests/' + id + '/status', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status, assignedTo })
+                    });
+                    alert('Сохранено');
+                    loadRequests();
+                });
+            });
+        }
+
+        loadRequests();
+    </script>
+}

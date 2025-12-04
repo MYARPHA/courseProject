@@ -51,8 +51,19 @@ namespace courseProject.Services
 
         private string GenerateJwtToken(User user)
         {
+            // Safe read of JWT configuration with environment fallback and defaults
             var jwtSettings = _configuration.GetSection("Jwt");
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!));
+            var secret = jwtSettings["SecretKey"]
+                         ?? _configuration["Jwt:SecretKey"]
+                         ?? Environment.GetEnvironmentVariable("JWT_SECRET")
+                         ?? "dev_secret_change_in_production";
+
+            var issuer = jwtSettings["Issuer"] ?? _configuration["Jwt:Issuer"] ?? "courseProjectIssuer";
+            var audience = jwtSettings["Audience"] ?? _configuration["Jwt:Audience"] ?? "courseProjectAudience";
+            var expStr = jwtSettings["ExpirationMinutes"] ?? _configuration["Jwt:ExpirationMinutes"] ?? "60";
+            if (!int.TryParse(expStr, out var minutes)) minutes = 60;
+
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
             var credentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
@@ -64,10 +75,10 @@ namespace courseProject.Services
             };
 
             var token = new JwtSecurityToken(
-                issuer: jwtSettings["Issuer"],
-                audience: jwtSettings["Audience"],
+                issuer: issuer,
+                audience: audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(int.Parse(jwtSettings["ExpirationMinutes"]!)),
+                expires: DateTime.UtcNow.AddMinutes(minutes),
                 signingCredentials: credentials
             );
 

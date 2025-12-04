@@ -20,14 +20,14 @@
 
     <style>
         :root {
-            --primary: #4361ee;
-            --primary-hover: #3a56d4;
-            --danger: #e63946;
-            --success: #2a9d8f;
-            --gray: #6c757d;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --primary: #000000;
+            --primary-hover: #222222;
+            --danger: #b30000;
+            --success: #222222;
+            --gray: #7a7a7a;
+            --light: #ffffff;
+            --dark: #111111;
+            --bg-gradient: linear-gradient(180deg, #ffffff 0%, #f7f7f7 100%);
         }
 
         * {
@@ -179,7 +179,7 @@
         <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <i class="fas fa-graduation-cap"></i> courseProject
+                    <i class="fas fa-graduation-cap"></i> Financial Solutions
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -188,23 +188,40 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Home" ? "active" : "")"
+                            <a class="nav-link @((ViewContext.RouteData.Values["controller"]?.ToString() ?? "") == "Home" ? "active" : "")"
                                asp-area="" asp-controller="Home" asp-action="Index">
                                 <i class="fas fa-home"></i> Главная
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "ServiceCategories" ? "active" : "")"
+                            <a class="nav-link @((ViewContext.RouteData.Values["controller"]?.ToString() ?? "") == "ServiceCategories" ? "active" : "")"
                                asp-area="" asp-controller="ServiceCategories" asp-action="Index">
                                 <i class="fas fa-tags"></i> Категории
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Services" ? "active" : "")"
+                            <a class="nav-link @((ViewContext.RouteData.Values["controller"]?.ToString() ?? "") == "Services" ? "active" : "")"
                                asp-area="" asp-controller="Services" asp-action="Index">
                                 <i class="fas fa-cogs"></i> Услуги
                             </a>
                         </li>
+
+                        @if (User?.Identity?.IsAuthenticated ?? false)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Requests" asp-action="Create">
+                                    <i class="fas fa-paper-plane"></i> Оставить заявку
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#authModal">
+                                    <i class="fas fa-paper-plane"></i> Оставить заявку
+                                </a>
+                            </li>
+                        }
                     </ul>
 
                     <!-- Кнопка авторизации справа -->
@@ -218,10 +235,22 @@
         </nav>
     </header>
 
+    @* Demo credentials hint *@
+    <div class="container mt-3">
+        <div class="alert alert-secondary alert-dismissible fade show small" role="alert">
+            <div>
+                Demo accounts: Админ — <strong>admin@local / Admin123!</strong>;
+                Клиент — <strong>client@local / Client123!</strong>.
+                Используйте их для тестирования (токен JWT выдаётся через /api/user/auth/login).
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+
     <!-- МОДАЛ АВТОРИЗАЦИИ -->
     <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content auth-modal">
                 <div class="modal-header border-bottom-0">
                     <h5 class="modal-title" id="authModalLabel">Авторизация</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -232,12 +261,12 @@
                         <label class="form-label">Вы авторизируетесь как:</label>
                         <div class="btn-group w-100" role="group">
                             <input type="radio" class="btn-check" name="role" id="roleUser" value="user" checked>
-                            <label class="btn btn-outline-primary" for="roleUser">
+                            <label class="btn btn-outline-dark" for="roleUser">
                                 <i class="fas fa-user me-2"></i>Пользователь
                             </label>
 
                             <input type="radio" class="btn-check" name="role" id="roleAdmin" value="admin">
-                            <label class="btn btn-outline-primary" for="roleAdmin">
+                            <label class="btn btn-outline-dark" for="roleAdmin">
                                 <i class="fas fa-shield-alt me-2"></i>Администратор
                             </label>
                         </div>
@@ -246,13 +275,19 @@
                     <form id="authForm">
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" placeholder="example@mail.com" required>
+                            <div class="input-group">
+                                <span class="input-group-text input-icon"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control" id="email" placeholder="example@mail.com" required>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Пароль</label>
-                            <input type="password" class="form-control" id="password" placeholder="••••••••" required>
+                            <div class="input-group">
+                                <span class="input-group-text input-icon"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="password" placeholder="••••••••" required>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">
+                        <button type="submit" class="btn btn-dark w-100">
                             <i class="fas fa-sign-in-alt me-2"></i> Войти
                         </button>
                     </form>
@@ -260,7 +295,7 @@
                     <hr class="my-3">
 
                     <p class="text-center text-muted mb-0">Нет аккаунта? 
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal">Зарегистрироваться</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal" class="link-dark">Зарегистрироваться</a>
                     </p>
                 </div>
             </div>
@@ -270,7 +305,7 @@
     <!-- МОДАЛ РЕГИСТРАЦИИ -->
     <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content auth-modal">
                 <div class="modal-header border-bottom-0">
                     <h5 class="modal-title" id="registerModalLabel">Регистрация</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -279,17 +314,26 @@
                     <form id="registerForm">
                         <div class="mb-3">
                             <label for="fullName" class="form-label">Полное имя</label>
-                            <input type="text" class="form-control" id="fullName" placeholder="Иван Иванов" required>
+                            <div class="input-group">
+                                <span class="input-group-text input-icon"><i class="fas fa-id-card"></i></span>
+                                <input type="text" class="form-control" id="fullName" placeholder="Иван Иванов" required>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="regEmail" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="regEmail" placeholder="example@mail.com" required>
+                            <div class="input-group">
+                                <span class="input-group-text input-icon"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control" id="regEmail" placeholder="example@mail.com" required>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="regPassword" class="form-label">Пароль</label>
-                            <input type="password" class="form-control" id="regPassword" placeholder="••••••••" required>
+                            <div class="input-group">
+                                <span class="input-group-text input-icon"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="regPassword" placeholder="••••••••" required>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">
+                        <button type="submit" class="btn btn-dark w-100">
                             <i class="fas fa-user-plus me-2"></i> Зарегистрироваться
                         </button>
                     </form>
@@ -297,7 +341,7 @@
                     <hr class="my-3">
 
                     <p class="text-center text-muted mb-0">Уже есть аккаунт? 
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#authModal" data-bs-dismiss="modal">Войти</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#authModal" data-bs-dismiss="modal" class="link-dark">Войти</a>
                     </p>
                 </div>
             </div>
@@ -346,7 +390,11 @@
                             <div class="user-info">${userEmail}</div>
                             <div class="user-role">${userRole === 'admin' ? '🛡️ Администратор' : '👤 Пользователь'}</div>
                         </div>
-                        <button class="btn btn-outline-danger btn-sm" onclick="logout()">
+                        <a class="btn btn-outline-primary btn-sm ms-2" href="/Account/Profile">
+                            <i class="fas fa-user-circle me-1"></i> Профиль
+                        </a>
+                        ${userRole === 'admin' ? `<a class="btn btn-outline-secondary btn-sm ms-2" href="/Admin/Requests"><i class="fas fa-tools me-1"></i> Админ</a>` : ''}
+                        <button class="btn btn-outline-danger btn-sm ms-2" onclick="logout()">
                             <i class="fas fa-sign-out-alt me-2"></i> Выход
                         </button>
                     </div>
@@ -361,10 +409,16 @@
         }
 
         // Функция выхода
-        function logout() {
+        async function logout() {
+            try {
+                await fetch('/api/user/auth/logout', { method: 'POST', credentials: 'include' });
+            } catch (e) {
+                console.warn('Logout request failed', e);
+            }
             localStorage.removeItem('authToken');
             localStorage.removeItem('userEmail');
             localStorage.removeItem('userRole');
+            localStorage.removeItem('userFullName');
             updateAuthUI();
             alert('✔️ Вы вышли из системы');
         }
@@ -394,6 +448,7 @@
             try {
                 const response = await fetch('/api/user/auth/login', {
                     method: 'POST',
+                    credentials: 'include', // important: accept/set cookie
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
@@ -403,7 +458,12 @@
                 if (response.ok && data.success) {
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('userEmail', email);
-                    localStorage.setItem('userRole', role);
+                    if (data.user) {
+                        localStorage.setItem('userFullName', data.user.fullName || '');
+                        localStorage.setItem('userRole', data.user.role || role);
+                    } else {
+                        localStorage.setItem('userRole', role);
+                    }
                     
                     alert('✅ Успешная авторизация!');
                     bootstrap.Modal.getInstance(document.getElementById('authModal')).hide();
@@ -442,6 +502,7 @@
             try {
                 const response = await fetch('/api/user/auth/register', {
                     method: 'POST',
+                    credentials: 'include',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password, fullName, role: 'accountant' })
                 });
@@ -449,14 +510,18 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    alert('✅ Регистрация успешна! Теперь войдите.');
+                    // sign-in already performed server-side (cookie), store token & user
+                    localStorage.setItem('authToken', data.token);
+                    if (data.user) {
+                        localStorage.setItem('userFullName', data.user.fullName || '');
+                        localStorage.setItem('userEmail', data.user.email || '');
+                        localStorage.setItem('userRole', data.user.role || 'accountant');
+                    }
+
+                    alert('✅ Регистрация успешна! Вы вошли в систему.');
                     bootstrap.Modal.getInstance(document.getElementById('registerModal')).hide();
                     document.getElementById('registerForm').reset();
-                    
-                    // Переключение на модал авторизации
-                    setTimeout(() => {
-                        bootstrap.Modal.getOrCreateInstance(document.getElementById('authModal')).show();
-                    }, 300);
+                    updateAuthUI();
                 } else {
                     alert('❌ ' + (data.message || 'Ошибка при регистрации'));
                 }
@@ -466,7 +531,7 @@
             }
         });
 
-        // Функция для добавления токена к запросам
+        // Функция для добавления токена к запросам (с credentials)
         async function fetchWithAuth(url, options = {}) {
             const token = localStorage.getItem('authToken');
             const headers = options.headers || {};
@@ -475,7 +540,7 @@
                 headers['Authorization'] = `Bearer ${token}`;
             }
             
-            return fetch(url, { ...options, headers });
+            return fetch(url, { ...options, headers, credentials: 'include' });
         }
     </script>
 

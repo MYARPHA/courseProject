@@ -151,7 +151,182 @@ html {
     text-decoration: none;
 }
 
-/* === Responsive === */
+/* Override palette for monochrome/cards */
+body {
+    background: var(--bg-gradient);
+    color: var(--dark);
+}
+
+/* Grid for service cards */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 28px;
+    margin-top: 24px;
+}
+
+/* Individual service card */
+.service-card {
+    background: var(--light);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 8px 30px rgba(17,17,17,0.06);
+    border: 1px solid rgba(17,17,17,0.04);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 220px;
+}
+
+.card-top {
+    display:flex;
+    justify-content:flex-start;
+}
+
+/* Category badge */
+.badge-category {
+    background: #f5f5f5;
+    color: var(--dark);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Title / description / price */
+.service-title {
+    margin-top: 16px;
+    font-size: 1.05rem;
+    color: var(--dark);
+    font-weight: 700;
+}
+
+.service-desc {
+    margin-top: 8px;
+    color: var(--gray);
+    font-size: 0.95rem;
+    flex: 1;
+}
+
+.service-price {
+    margin-top: 12px;
+    font-weight: 700;
+    color: var(--dark);
+    font-size: 1.05rem;
+}
+
+/* Actions */
+.card-actions {
+    margin-top: 14px;
+    display:flex;
+    align-items:center;
+}
+
+/* Accent for dark buttons */
+.btn-dark {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 999px;
+}
+
+/* Outline dark */
+.btn-outline-dark {
+    border: 1px solid rgba(0,0,0,0.12);
+    color: var(--dark);
+    background: transparent;
+    padding: 8px 12px;
+    border-radius: 999px;
+}
+
+/* Add-button special */
+.btn-add {
+    border-radius: 999px;
+    padding: 10px 18px;
+}
+
+/* Auth modal styles */
+.auth-modal .modal-content {
+    background: var(--light);
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    color: var(--dark);
+}
+
+.auth-modal .modal-header {
+    border-bottom: 0;
+}
+
+.auth-modal .modal-body {
+    padding: 1.5rem;
+}
+
+/* Input groups with icons */
+.input-group .input-icon {
+    background: transparent;
+    border: none;
+    color: var(--primary);
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+}
+
+.input-group .form-control {
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.12);
+    padding: 0.6rem 0.75rem;
+    background: #fff;
+    color: var(--dark);
+}
+
+.input-group .form-control:focus {
+    box-shadow: 0 0 0 0.15rem rgba(0,0,0,0.06);
+    border-color: var(--primary);
+}
+
+/* Dark primary button (used in auth/register) */
+.btn-dark {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    box-shadow: none;
+    padding: 0.65rem 1rem;
+    border-radius: 10rem;
+    transition: background 0.18s ease, transform 0.08s ease;
+}
+
+.btn-dark:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+/* Outline dark for role selection */
+.btn-outline-dark {
+    color: var(--dark);
+    border: 1px solid rgba(0,0,0,0.12);
+    background: transparent;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+}
+
+/* Link style inside modals */
+.auth-modal .link-dark {
+    color: var(--dark);
+    text-decoration: underline;
+}
+
+/* Small responsive tweaks */
+@media (max-width: 576px) {
+    .auth-modal .modal-dialog { max-width: 92%; }
+    .input-group .input-icon { padding: 0.45rem 0.6rem; }
+}
+
+@media (max-width: 768px) {
+    .card-grid { gap: 18px; }
+    .service-card { padding: 16px; }
+}
+
 @media (max-width: 768px) {
     .page-title {
         font-size: 1.5rem;
@@ -188,3 +363,48 @@ html {
         padding: 0.5rem 0;
     }
 }
+
+/* Make all font-awesome icons black by default */
+.fa, .fas, .far, .fal, .fab {
+    color: #000 !important;
+}
+
+/* Status badges (colored) */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #fff;
+}
+
+/* specific statuses */
+.status-badge.новая, .status-badge["Новая"], .status-badge.new, .status-badge["new"] {
+    background: #6c757d; /* gray */
+}
+.status-badge.в-обработке, .status-badge["В обработке"], .status-badge.in-progress, .status-badge["in-progress"] {
+    background: #f0ad4e; /* orange */
+}
+.status-badge.завершена, .status-badge["Завершена"], .status-badge.completed {
+    background: #28a745; /* green */
+}
+.status-badge.отменена, .status-badge["Отменена"], .status-badge.cancelled {
+    background: #dc3545; /* red */
+}
+
+/* Also accept lowercased/normalized classes used in templates */
+.status-badge.nовая { background: #6c757d; }
+.status-badge.в-обработке { background: #f0ad4e; }
+.status-badge.завершена { background: #28a745; }
+.status-badge.отменена { background: #dc3545; }
+
+/* Fallback: generic classes */
+.status-badge.new { background: #6c757d; }
+.status-badge["in-progress"], .status-badge.in-progress { background: #f0ad4e; }
+.status-badge.completed { background: #28a745; }
+.status-badge.cancelled { background: #dc3545; }
+
+/* Ensure buttons and outlines use black theme as earlier */
+.btn-dark { background: var(--primary); color: #fff; border: none; }
+.btn-outline-dark { border: 1px solid rgba(0,0,0,0.12); color: var(--dark); }

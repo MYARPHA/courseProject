@@ -1,19 +1,26 @@
 ﻿@{
-    ViewData["Title"] = "Главная";
+    ViewData["Title"] = "Financial Solutions";
 }
 
 <div class="page-header text-center mb-5">
-    <h1 class="display-4 fw-bold"><i class="fas fa-graduation-cap me-3"></i>Добро пожаловать</h1>
-    <p class="lead mt-3">Система управления услугами и категориями</p>
+    <h1 class="display-4 fw-bold">Услуги по ведению бухгалтерского учёта</h1>
+    <p class="lead mt-3">Профессиональное ведение бухгалтерии для вашего бизнеса</p>
+
+    <div class="mt-4">
+        <a asp-controller="Requests" asp-action="Create" class="btn btn-primary btn-lg">
+            <i class="fas fa-paper-plane me-2"></i> Оставить заявку
+        </a>
+    </div>
 </div>
 
+@* Восстановлены карточки навигации на список услуг и категорий *@
 <div class="row g-4 py-4">
     <div class="col-md-6">
         <div class="card h-100">
             <div class="card-body text-center p-4">
                 <i class="fas fa-cogs fa-3x text-primary mb-3"></i>
                 <h3 class="card-title">Управление услугами</h3>
-                <p class="card-text">Добавляйте, редактируйте и управляйте услугами вашей компании.</p>
+                <p class="card-text">Просмотрите полный список услуг и добавляйте в заявку.</p>
                 <a asp-controller="Services" asp-action="Index" class="btn btn-primary">
                     <i class="fas fa-arrow-right me-2"></i> Перейти к услугам
                 </a>

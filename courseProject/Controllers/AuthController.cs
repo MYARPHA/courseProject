@@ -1,5 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using courseProject.Services;
+using courseProject.Data;
+using System.Linq;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
 
 namespace courseProject.Controllers
 {
@@ -9,11 +14,13 @@ namespace courseProject.Controllers
     {
         private readonly AuthService _authService;
         private readonly ILogger<AuthController> _logger;
+        private readonly AppDbContext _context;
 
-        public AuthController(AuthService authService, ILogger<AuthController> logger)
+        public AuthController(AuthService authService, ILogger<AuthController> logger, AppDbContext context)
         {
             _authService = authService;
             _logger = logger;
+            _context = context;
         }
 
         /// <summary>
@@ -35,6 +42,18 @@ namespace courseProject.Controllers
                 var token = _authService.Authenticate(request.Email, request.Password);
                 
                 _logger.LogInformation($"Пользователь {user.Email} успешно зарегистрирован");
+
+                // Sign in cookie (server-side session)
+                var claims = new List<Claim>
+                {
+                    new Claim("id", user.UserId.ToString()),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Name, user.FullName ?? ""),
+                    new Claim(ClaimTypes.Role, user.Role ?? "user")
+                };
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
                 return Ok(new 
                 { 
@@ -67,7 +86,7 @@ namespace courseProject.Controllers
         /// POST: api/user/auth/login
         /// </summary>
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             try
             {
@@ -82,13 +101,31 @@ namespace courseProject.Controllers
                     return Unauthorized(new { success = false, message = "Неверный email или пароль" });
                 }
 
+                var user = _context.Users.FirstOrDefault(u => u.Email == request.Email);
+                
+                if (user != null)
+                {
+                    // create cookie principal
+                    var claims = new List<Claim>
+                    {
+                        new Claim("id", user.UserId.ToString()),
+                        new Claim(ClaimTypes.Email, user.Email),
+                        new Claim(ClaimTypes.Name, user.FullName ?? ""),
+                        new Claim(ClaimTypes.Role, user.Role ?? "user")
+                    };
+                    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var principal = new ClaimsPrincipal(identity);
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                }
+
                 _logger.LogInformation($"Пользователь {request.Email} успешно авторизован");
 
                 return Ok(new 
                 { 
                     success = true,
                     token,
-                    expiresIn = 3600
+                    expiresIn = 3600,
+                    user = user == null ? null : new { id = user.UserId, email = user.Email, fullName = user.FullName, role = user.Role }
                 });
             }
             catch (Exception ex)
@@ -97,5 +134,25 @@ namespace courseProject.Controllers
                 return StatusCode(500, new { success = false, message = "Внутренняя ошибка сервера" });
             }
         }
+
+        /// <summary>
+        /// Выход пользователя
+        /// POST: api/user/auth/logout
+        /// </summary>
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            try
+            {
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                return Ok(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Logout error: " + ex.Message);
+                return StatusCode(500, new { success = false, message = "Ошибка при выходе" });
+            }
+        }
+
     }
 }
