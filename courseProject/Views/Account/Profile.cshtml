@@ -28,7 +28,61 @@
     </div>
 </div>
 
-@* Request list removed from profile as requested. *@
+@* Request list: show user's requests with status and totals *@
+@if (Model.Requests != null && Model.Requests.Any())
+{
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mb-3">Мои заявки</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Дата</th>
+                            <th>Позиции</th>
+                            <th>Сумма</th>
+                            <th>Статус</th>
+                            <th>Ответственный</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var idx = 1;
+                        }
+                        @foreach (var r in Model.Requests)
+                        {
+                            <tr>
+                                <td>@idx</td>
+                                <td>@(r.CreatedAt.ToString("dd MMM yyyy"))</td>
+                                <td>
+                                    @if (r.Items != null && r.Items.Any())
+                                    {
+                                        <span class="small text-muted">@r.Items.Count() поз.</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="small text-muted">—</span>
+                                    }
+                                </td>
+                                <td>@(r.Total.ToString("C"))</td>
+                                <td>
+                                    <span class="badge bg-secondary">@r.Status</span>
+                                </td>
+                                <td>@(string.IsNullOrWhiteSpace(r.AssignedTo) ? "—" : r.AssignedTo)</td>
+                            </tr>
+                            idx++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">У вас пока нет заявок.</div>
+}
 
 @section Scripts {
     <script>
