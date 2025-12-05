@@ -369,6 +369,17 @@ body {
     color: #000 !important;
 }
 
+/* Soft powder-pink blurred background overlay */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 10% 10%, rgba(251,232,239,0.45) 0%, rgba(255,255,255,0) 25%), radial-gradient(ellipse at 90% 90%, rgba(255,240,245,0.35) 0%, rgba(255,255,255,0) 30%);
+    filter: blur(40px);
+    z-index: -1;
+}
+
 /* Status badges (colored) */
 .status-badge {
     display: inline-block;

@@ -43,6 +43,10 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<ServiceCategory> ServiceCategories { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<Review> Reviews { get; set; }
+    public virtual DbSet<RequestEntity> RequestEntities { get; set; }
+    public virtual DbSet<RequestItemEntity> RequestItemEntities { get; set; }
+    public virtual DbSet<StatusEntity> RequestStatuses { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -159,10 +163,50 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.PasswordHash)
                 .HasMaxLength(255)
                 .HasColumnName("password_hash");
+            entity.Property(e => e.Phone)
+                .HasMaxLength(20)
+                .HasColumnName("phone");
+            entity.Property(e => e.AvatarPath)
+                .HasMaxLength(255)
+                .HasColumnName("avatar_path");
             entity.Property(e => e.Role)
                 .HasDefaultValueSql("'accountant'")
                 .HasColumnType("enum('admin','accountant','assistant')")
                 .HasColumnName("role");
+        });
+
+        modelBuilder.Entity<RequestEntity>(entity =>
+        {
+            entity.HasKey(e => e.RequestEntityId);
+            entity.ToTable("RequestEntities");
+            entity.Property(e => e.RequestEntityId).HasColumnName("RequestEntityId");
+            entity.Property(e => e.CustomerName).IsRequired();
+            entity.Property(e => e.CustomerEmail).IsRequired();
+            entity.Property(e => e.CustomerPhone);
+            entity.Property(e => e.Status).IsRequired();
+            entity.Property(e => e.AssignedTo);
+            entity.Property(e => e.Total).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<RequestItemEntity>(entity =>
+        {
+            entity.HasKey(e => e.RequestItemEntityId);
+            entity.ToTable("RequestItemEntities");
+            entity.Property(e => e.RequestItemEntityId).HasColumnName("RequestItemEntityId");
+            entity.Property(e => e.Title);
+            entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
+            entity.HasIndex(e => e.RequestEntityId);
+            entity.HasOne(e => e.Request).WithMany(r => r.Items).HasForeignKey(e => e.RequestEntityId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<StatusEntity>(entity =>
+        {
+            entity.HasKey(e => e.StatusEntityId);
+            entity.ToTable("request_statuses");
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Color).HasMaxLength(20);
+            entity.Property(e => e.Icon).HasMaxLength(50);
         });
 
         OnModelCreatingPartial(modelBuilder);

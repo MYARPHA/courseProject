@@ -99,6 +99,16 @@ namespace courseProject.Services
             var hashOfInput = HashPassword(password);
             return hashOfInput == hash;
         }
+
+        // Change user's password if current password matches. Returns true when changed.
+        public bool ChangePassword(User user, string currentPassword, string newPassword)
+        {
+            if (user == null) return false;
+            if (!VerifyPassword(currentPassword, user.PasswordHash)) return false;
+            user.PasswordHash = HashPassword(newPassword);
+            _context.SaveChanges();
+            return true;
+        }
     }
 
     public class UserRegistrationRequest

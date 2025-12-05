@@ -10,7 +10,15 @@
 
 <div class="card mb-4">
     <div class="card-body d-flex gap-4 align-items-center">
-        <div id="avatarPreview" style="width:96px;height:96px;border-radius:12px;background:#f1f1f1;display:flex;align-items:center;justify-content:center;font-size:36px;">
+        <div id="avatarPreview" style="width:96px;height:96px;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#f1f1f1;">
+            @if (!string.IsNullOrEmpty(Model.User.AvatarPath))
+            {
+                <img src="@Model.User.AvatarPath" alt="avatar" style="width:96px;height:96px;object-fit:cover;" />
+            }
+            else
+            {
+                <div id="avatarPlaceholder" style="font-size:36px;padding:6px;">👤</div>
+            }
         </div>
         <div>
             <div><strong>Email:</strong> @Model.User.Email</div>
@@ -20,47 +28,22 @@
     </div>
 </div>
 
-<div class="card">
-    <div class="card-body">
-        <h5>Мои заявки</h5>
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Дата</th>
-                        <th>Услуги</th>
-                        <th>Сумма</th>
-                        <th>Статус</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var r in Model.Requests)
-                    {
-                        <tr>
-                            <td>@r.Id</td>
-                            <td>@r.CreatedAt.ToString("g")</td>
-                            <td>
-                                @foreach (var it in r.Items)
-                                {
-                                    <div>@it.Title — @it.Price ₽</div>
-                                }
-                            </td>
-                            <td>@r.Total ₽</td>
-                            <td>
-                                <span class="status-badge @(r.Status.ToLower().Replace(" ", "-"))">@r.Status</span>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+@* Request list removed from profile as requested. *@
 
 @section Scripts {
     <script>
-        // avatar preview from localStorage
-        document.getElementById('avatarPreview').innerText = localStorage.getItem('userAvatar') || '👤';
+        // show saved avatar (from server) or local selection
+        (function(){
+            const preview = document.getElementById('avatarPreview');
+            // if server-provided img exists, nothing to do. otherwise show localStorage emoji
+            const img = preview.querySelector('img');
+            if (!img) {
+                const ls = localStorage.getItem('userAvatar');
+                if (ls) {
+                    const ph = document.getElementById('avatarPlaceholder');
+                    if (ph) ph.innerText = ls;
+                }
+            }
+        })();
     </script>
 }

@@ -13,6 +13,10 @@ public partial class User
 
     public string PasswordHash { get; set; } = null!;
 
+    public string? Phone { get; set; }
+
+    public string? AvatarPath { get; set; }
+
     public string? Role { get; set; }
 
     public DateTime? CreatedAt { get; set; }

@@ -23,7 +23,16 @@
 @section Scripts {
     <script>
         async function loadRequests() {
-            const res = await fetch('/api/requests');
+            const fetchFn = (typeof fetchWithAuth === 'function') ? fetchWithAuth : fetch;
+
+            // load status definitions from DB if available
+            let defs = [{ name: 'Новая' }, { name: 'В обработке' }, { name: 'Завершена' }, { name: 'Отменена' }];
+            try {
+                const sres = await fetchFn('/api/requests/statuses/definitions');
+                if (sres.ok) defs = await sres.json();
+            } catch (e) { console.warn('Could not load status definitions', e); }
+
+            const res = await fetchFn('/api/requests');
             const data = await res.json();
             const container = document.getElementById('requestsContainer');
             if (!data || !data.length) {
@@ -40,13 +49,10 @@
                     <td>${items}</td>
                     <td>${r.total}</td>
                     <td>
-                        <select class="form-select status-select" data-id="${r.id}">
-                            <option ${r.status==='Новая'?'selected':''}>Новая</option>
-                            <option ${r.status==='В обработке'?'selected':''}>В обработке</option>
-                            <option ${r.status==='Завершена'?'selected':''}>Завершена</option>
-                            <option ${r.status==='Отменена'?'selected':''}>Отменена</option>
-                        </select>
-                    </td>
+                            <select class="form-select status-select" data-id="${r.id}">
+                                ${defs.map(d => `<option ${r.status===d.name?'selected':''}>${d.name}</option>`).join('')}
+                            </select>
+                        </td>
                     <td><input class="form-control assign-input" data-id="${r.id}" value="${r.assignedTo || ''}" /></td>
                     <td><button class="btn btn-sm btn-primary save-btn" data-id="${r.id}">Сохранить</button></td>
                 </tr>`;
@@ -59,10 +65,10 @@
                     const id = b.getAttribute('data-id');
                     const status = document.querySelector('.status-select[data-id="'+id+'"]').value;
                     const assignedTo = document.querySelector('.assign-input[data-id="'+id+'"]').value;
-                    await fetch('/api/requests/' + id + '/status', {
+                    await fetchFn('/api/requests/' + id + '/status', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ status, assignedTo })
+                        body: JSON.stringify({ Status: status, AssignedTo: assignedTo })
                     });
                     alert('Сохранено');
                     loadRequests();

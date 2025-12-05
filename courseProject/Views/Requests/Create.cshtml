@@ -120,8 +120,15 @@
                     body: JSON.stringify(dto)
                 });
 
-                const data = await res.json();
-                if (res.ok && data.success) {
+                // Try to parse JSON, but if server returned HTML/text show it for debugging
+                let data = null;
+                try {
+                    const ct = res.headers.get('content-type') || '';
+                    if (ct.includes('application/json')) data = await res.json();
+                    else data = { __rawText: await res.text() };
+                } catch (e) { console.error('Failed to parse response body', e); }
+
+                if (res.ok && data && data.success) {
                     alert('Заявка отправлена. Номер: ' + data.id);
                     localStorage.removeItem('cart');
                     renderCart();
@@ -129,11 +136,14 @@
                     alert('Требуется авторизация. Пожалуйста, войдите.');
                     bootstrap.Modal.getOrCreateInstance(document.getElementById('authModal')).show();
                 } else {
-                    alert('Ошибка отправки: ' + (data.message || ''));
+                    // show detailed message when available
+                    const msg = (data && data.message) ? data.message : (data && data.__rawText) ? data.__rawText : ('HTTP ' + res.status);
+                    console.error('Request submit failed', { status: res.status, body: msg });
+                    alert('Ошибка отправки: ' + msg);
                 }
             } catch (err) {
-                console.error(err);
-                alert('Ошибка сети');
+                console.error('Network/fetch error while submitting request', err);
+                alert('Ошибка сети: ' + (err && err.message ? err.message : err));
             }
         });
 

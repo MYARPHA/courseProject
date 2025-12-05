@@ -1,0 +1,70 @@
+@model List<courseProject.Models.RequestModel>
+@{
+    ViewData["Title"] = "Администрирование заявок";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Заявки — админ</h1>
+</div>
+
+<div class="mb-3 d-flex justify-content-end gap-2">
+    <a id="adminExportVisible" class="btn btn-outline-primary">Экспорт (Excel)</a>
+    <a href="/Requests/Export" class="btn btn-outline-secondary">Экспорт (CSV)</a>
+</div>
+
+<div class="card">
+    <div class="card-body table-responsive">
+        <table id="profileRequestsTable" class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Клиент</th>
+                    <th>Телефон</th>
+                    <th>Услуги</th>
+                    <th>Сумма</th>
+                    <th>Статус</th>
+                    <th>Исполнитель</th>
+                    <th>Дата</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var r in Model.OrderByDescending(x => x.CreatedAt))
+                    {
+                        <tr data-request-id="@r.Id">
+                            <td>@r.Id</td>
+                            <td>
+                                <div><strong>@r.CustomerName</strong></div>
+                                <div class="text-muted small">@r.CustomerEmail</div>
+                            </td>
+                            <td>@r.CustomerPhone</td>
+                            <td>
+                                @foreach (var it in r.Items)
+                                {
+                                    <div>@it.Title &ndash; @it.Price</div>
+                                }
+                            </td>
+                            <td>@r.Total</td>
+                            <td>
+                                <span class="status-badge @(r.Status?.ToLower().Replace(" ", "-") ?? "")" data-status="@r.Status">@r.Status</span>
+                            </td>
+                            <td>@r.AssignedTo</td>
+                            <td>@r.CreatedAt.ToLocalTime().ToString("g")</td>
+                            <td class="admin-actions-cell"></td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="9" class="text-center text-muted">Нет заявок</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="/js/profile-admin-controls.js"></script>
+}

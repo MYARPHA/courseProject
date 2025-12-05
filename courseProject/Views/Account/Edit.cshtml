@@ -9,7 +9,7 @@
 
 <div class="card">
     <div class="card-body">
-        <form asp-action="Edit" method="post">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <div class="mb-3">
                 <label class="form-label">Email</label>
                 <input class="form-control" value="@Model.Email" disabled />
@@ -22,12 +22,40 @@
 
             <div class="mb-3">
                 <label class="form-label">Выбрать аватар (локально)</label>
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div id="editAvatarPreview" style="width:96px;height:96px;border-radius:12px;overflow:hidden;background:#f1f1f1;display:flex;align-items:center;justify-content:center;font-size:36px;">
+                        @if (!string.IsNullOrEmpty(Model.AvatarPath))
+                        {
+                            <img src="@Model.AvatarPath" alt="avatar" style="width:96px;height:96px;object-fit:cover;" />
+                        }
+                        else
+                        {
+                            <div id="editAvatarPlaceholder">👤</div>
+                        }
+                    </div>
+                    <div>
+                        <input type="file" name="avatarFile" accept="image/*" class="form-control" id="avatarFileInput" />
+                        <div class="form-text">Выберите файл с устройства — он будет загружен при сохранении профиля.</div>
+                    </div>
+                </div>
                 <div class="d-flex gap-2" id="avatarChoices">
                     <button type="button" class="btn btn-light avatar-choice" data-avatar="🧾">🧾</button>
                     <button type="button" class="btn btn-light avatar-choice" data-avatar="📊">📊</button>
                     <button type="button" class="btn btn-light avatar-choice" data-avatar="🧑‍💼">🧑‍💼</button>
                     <button type="button" class="btn btn-light avatar-choice" data-avatar="👩‍💼">👩‍💼</button>
                 </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Phone" class="form-label">Телефон</label>
+                <input asp-for="Phone" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Изменить пароль</label>
+                <input type="password" name="currentPassword" class="form-control mb-2" placeholder="Текущий пароль" />
+                <input type="password" name="newPassword" class="form-control mb-2" placeholder="Новый пароль" />
+                <input type="password" name="confirmPassword" class="form-control" placeholder="Подтвердите новый пароль" />
             </div>
 
             <div class="d-flex gap-2">
@@ -40,24 +68,50 @@
 
 @section Scripts {
     <script>
-        // show saved avatar selection
-        function renderAvatarPreview() {
-            const avatar = localStorage.getItem('userAvatar') || '👤';
-            // visual hint: highlight selected button if any
+        // show saved avatar selection and preview uploaded file
+        (function(){
+            function renderAvatarPreviewFromLocal() {
+                const avatar = localStorage.getItem('userAvatar');
+                document.querySelectorAll('.avatar-choice').forEach(b => {
+                    b.classList.toggle('active', b.getAttribute('data-avatar') === avatar);
+                });
+                const preview = document.getElementById('editAvatarPreview');
+                if (preview && !preview.querySelector('img')) {
+                    const ph = document.getElementById('editAvatarPlaceholder');
+                    if (ph) ph.innerText = avatar || '👤';
+                }
+            }
+
             document.querySelectorAll('.avatar-choice').forEach(b => {
-                b.classList.toggle('active', b.getAttribute('data-avatar') === avatar);
+                b.addEventListener('click', () => {
+                    const a = b.getAttribute('data-avatar');
+                    localStorage.setItem('userAvatar', a);
+                    renderAvatarPreviewFromLocal();
+                    alert('Аватар сохранён локально');
+                });
             });
-        }
 
-        document.querySelectorAll('.avatar-choice').forEach(b => {
-            b.addEventListener('click', () => {
-                const a = b.getAttribute('data-avatar');
-                localStorage.setItem('userAvatar', a);
-                renderAvatarPreview();
-                alert('Аватар сохранён локально');
-            });
-        });
+            // file input preview
+            const fileInput = document.getElementById('avatarFileInput');
+            if (fileInput) {
+                fileInput.addEventListener('change', () => {
+                    const f = fileInput.files && fileInput.files[0];
+                    if (!f) return;
+                    const reader = new FileReader();
+                    reader.onload = function (ev) {
+                        const preview = document.getElementById('editAvatarPreview');
+                        if (!preview) return;
+                        preview.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = ev.target.result;
+                        img.style.width = '96px'; img.style.height = '96px'; img.style.objectFit = 'cover';
+                        preview.appendChild(img);
+                    };
+                    reader.readAsDataURL(f);
+                });
+            }
 
-        renderAvatarPreview();
+            renderAvatarPreviewFromLocal();
+        })();
     </script>
 }

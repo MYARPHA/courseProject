@@ -1,0 +1,99 @@
+@model List<courseProject.Models.Review>
+@{
+    Layout = "_Layout";
+}
+
+<section class="hero hero-reviews text-center py-5">
+    <div class="container">
+        <h1 class="display-4">Отзывы клиентов</h1>
+        <p class="lead text-muted">Узнайте, что говорят о нас наши клиенты</p>
+
+        <div class="my-4">
+            <a href="#reviewsList" class="btn btn-dark btn-lg me-2">Читать отзывы</a>
+            <a href="#addReview" class="btn btn-outline-secondary btn-lg">Оставить отзыв</a>
+        </div>
+
+        
+    </div>
+</section>
+
+<section class="reviews-stats py-5 bg-light">
+    <div class="container text-center">
+        <div class="row">
+            <div class="col-md-3">
+                <h2 class="display-6">@Model.Count</h2>
+                <div class="text-muted">Довольных клиентов</div>
+            </div>
+            <div class="col-md-3">
+                <h2 class="display-6">@((Model.Count>0)? Math.Round(Model.Average(r=>r.Rating),1) : 0)</h2>
+                <div class="text-muted">Средняя оценка</div>
+            </div>
+            <div class="col-md-3">
+                <h2 class="display-6">@Model.Where(r=>r.Rating>=4).Count()</h2>
+                <div class="text-muted">Рекомендут нас</div>
+            </div>
+            <div class="col-md-3">
+                <h2 class="display-6">@Model.Count</h2>
+                <div class="text-muted">Отзывов всего</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="addReview" class="container py-4">
+    @if (User?.Identity?.IsAuthenticated == true)
+    {
+        <div class="card p-4 mb-4">
+            <h5>Оставить отзыв</h5>
+            <form id="reviewForm">
+                <div class="mb-3">
+                    <label for="reviewText" class="form-label">Текст отзыва</label>
+                    <textarea id="reviewText" class="form-control" rows="4" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="reviewRating" class="form-label">Оценка</label>
+                    <select id="reviewRating" class="form-select" style="width:120px;">
+                        <option value="5" selected>5</option>
+                        <option value="4">4</option>
+                        <option value="3">3</option>
+                        <option value="2">2</option>
+                        <option value="1">1</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Отправить</button>
+                <div id="reviewMessage" class="mt-3"></div>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">Только <a href="#" data-bs-toggle="modal" data-bs-target="#authModal">авторизованные пользователи</a> могут оставлять отзывы.</div>
+    }
+</section>
+
+<section id="reviewsList" class="container py-4">
+    <div class="row g-4">
+        @foreach (var r in Model)
+        {
+            <div class="col-md-4">
+                <div class="card p-3 h-100">
+                    <div class="d-flex align-items-start">
+                        <div class="me-3">
+                            <div class="avatar-circle bg-dark text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width:48px;height:48px;">@r.AuthorName?.Split(' ').FirstOrDefault()?.Substring(0,1)</div>
+                        </div>
+                        <div>
+                            <div class="fw-bold">@r.AuthorName</div>
+                            <div class="text-muted small">@r.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</div>
+                        </div>
+                    </div>
+                    <div class="mt-3">@r.Text</div>
+                    <div class="mt-3">@for (int i=0;i<r.Rating;i++) { <span style="color:#f5b301">★</span> } </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+@section Scripts{
+    <script src="/js/reviews.js"></script>
+}
