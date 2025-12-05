@@ -30,20 +30,17 @@
                         }
                         else
                         {
-                            <div id="editAvatarPlaceholder">👤</div>
+                            <div id="editAvatarPlaceholder"></div>
                         }
                     </div>
                     <div>
-                        <input type="file" name="avatarFile" accept="image/*" class="form-control" id="avatarFileInput" />
+                        <input type="file" name="avatarFile" accept="image/*" id="avatarFileInput" style="display:none;" />
+                        <label for="avatarFileInput" class="btn btn-outline-dark file-input-btn">Выбрать файл</label>
+                        <span id="avatarFileName" class="ms-2 text-muted">Файл не выбран</span>
                         <div class="form-text">Выберите файл с устройства — он будет загружен при сохранении профиля.</div>
                     </div>
                 </div>
-                <div class="d-flex gap-2" id="avatarChoices">
-                    <button type="button" class="btn btn-light avatar-choice" data-avatar="🧾">🧾</button>
-                    <button type="button" class="btn btn-light avatar-choice" data-avatar="📊">📊</button>
-                    <button type="button" class="btn btn-light avatar-choice" data-avatar="🧑‍💼">🧑‍💼</button>
-                    <button type="button" class="btn btn-light avatar-choice" data-avatar="👩‍💼">👩‍💼</button>
-                </div>
+                @* Avatar choice emojis removed per request *@
             </div>
 
             <div class="mb-3">
@@ -70,33 +67,17 @@
     <script>
         // show saved avatar selection and preview uploaded file
         (function(){
-            function renderAvatarPreviewFromLocal() {
-                const avatar = localStorage.getItem('userAvatar');
-                document.querySelectorAll('.avatar-choice').forEach(b => {
-                    b.classList.toggle('active', b.getAttribute('data-avatar') === avatar);
-                });
-                const preview = document.getElementById('editAvatarPreview');
-                if (preview && !preview.querySelector('img')) {
-                    const ph = document.getElementById('editAvatarPlaceholder');
-                    if (ph) ph.innerText = avatar || '👤';
-                }
-            }
-
-            document.querySelectorAll('.avatar-choice').forEach(b => {
-                b.addEventListener('click', () => {
-                    const a = b.getAttribute('data-avatar');
-                    localStorage.setItem('userAvatar', a);
-                    renderAvatarPreviewFromLocal();
-                    alert('Аватар сохранён локально');
-                });
-            });
-
-            // file input preview
+            // file input preview and file name display
             const fileInput = document.getElementById('avatarFileInput');
+            const fileNameSpan = document.getElementById('avatarFileName');
             if (fileInput) {
                 fileInput.addEventListener('change', () => {
                     const f = fileInput.files && fileInput.files[0];
-                    if (!f) return;
+                    if (!f) {
+                        if (fileNameSpan) fileNameSpan.innerText = 'Файл не выбран';
+                        return;
+                    }
+                    if (fileNameSpan) fileNameSpan.innerText = f.name;
                     const reader = new FileReader();
                     reader.onload = function (ev) {
                         const preview = document.getElementById('editAvatarPreview');
@@ -111,7 +92,9 @@
                 });
             }
 
-            renderAvatarPreviewFromLocal();
+            // remove local emoji avatar usage — keep preview blank when no server avatar
+            const ph = document.getElementById('editAvatarPlaceholder');
+            if (ph) ph.innerText = '';
         })();
     </script>
 }

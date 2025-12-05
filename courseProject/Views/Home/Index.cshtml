@@ -7,39 +7,178 @@
     <p class="lead mt-3">Профессиональное ведение бухгалтерии для вашего бизнеса</p>
 
     <div class="mt-4">
-        <a asp-controller="Requests" asp-action="Create" class="btn btn-primary btn-lg">
+        <a asp-controller="Requests" asp-action="Create" class="btn btn-primary btn-lg me-2">
             <i class="fas fa-paper-plane me-2"></i> Оставить заявку
+        </a>
+        <a asp-controller="Services" asp-action="Index" class="btn btn-outline-dark btn-lg">
+            Узнать больше
         </a>
     </div>
 </div>
 
-@* Восстановлены карточки навигации на список услуг и категорий *@
-<div class="row g-4 py-4">
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-body text-center p-4">
-                <i class="fas fa-cogs fa-3x text-primary mb-3"></i>
-                <h3 class="card-title">Управление услугами</h3>
-                <p class="card-text">Просмотрите полный список услуг и добавляйте в заявку.</p>
-                <a asp-controller="Services" asp-action="Index" class="btn btn-primary">
-                    <i class="fas fa-arrow-right me-2"></i> Перейти к услугам
-                </a>
+@* Почему выбирают нас (карточки преимуществ) *@
+<section class="why-choose-us py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Почему выбирают нас</h2>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card p-4 h-100 text-center">
+                    <div class="mb-3"><i class="fas fa-shield-alt fa-2x text-dark"></i></div>
+                    <h5>Надёжность</h5>
+                    <p class="text-muted small">Гарантируем безопасность и конфиденциальность ваших данных</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-4 h-100 text-center">
+                    <div class="mb-3"><i class="fas fa-briefcase fa-2x text-dark"></i></div>
+                    <h5>Опыт</h5>
+                    <p class="text-muted small">Более 10 лет успешной работы с компаниями разных масштабов</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-4 h-100 text-center">
+                    <div class="mb-3"><i class="fas fa-chart-line fa-2x text-dark"></i></div>
+                    <h5>Эффективность</h5>
+                    <p class="text-muted small">Оптимизируем бизнес-процессы и снижаем издержки</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-4 h-100 text-center">
+                    <div class="mb-3"><i class="fas fa-award fa-2x text-dark"></i></div>
+                    <h5>Качество</h5>
+                    <p class="text-muted small">Точность и своевременность отчётности на высшем уровне</p>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-body text-center p-4">
-                <i class="fas fa-tags fa-3x text-primary mb-3"></i>
-                <h3 class="card-title">Категории услуг</h3>
-                <p class="card-text">Организуйте услуги по категориям для удобной навигации.</p>
-                <a asp-controller="ServiceCategories" asp-action="Index" class="btn btn-primary">
-                    <i class="fas fa-arrow-right me-2"></i> Перейти к категориям
-                </a>
+</section>
+
+@* Reviews block: header, stats, and 6 review cards (static mock) *@
+<section class="reviews-section py-5">
+    <div class="container">
+        <h2 class="text-center display-6 fw-bold mb-1">Отзывы клиентов</h2>
+        <p class="text-center text-muted mb-4">Узнайте, что говорят о нас наши клиенты</p>
+
+        <div class="row text-center reviews-stats mb-4">
+            <div class="col-sm-6 col-md-3">
+                <div class="h2 fw-bold">500+</div>
+                <div class="text-muted small">Довольных клиентов</div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="h2 fw-bold">10+</div>
+                <div class="text-muted small">Лет опыта</div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="h2 fw-bold">4.9</div>
+                <div class="text-muted small">Средняя оценка</div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="h2 fw-bold">98%</div>
+                <div class="text-muted small">Рекомендуют нас</div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card review-card p-4 h-100">
+                    <div class="star-rating mb-3">
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                    </div>
+                    <p class="mb-3">Отличный сервис! Профессиональная команда, которая всегда на связи. Работаем уже второй год, полностью довольны качеством услуг.</p>
+                    <hr />
+                    <div class="fw-bold">Цырульник Антон</div>
+                    <div class="text-muted small">ООО "Технологии" — 15 октября 2024</div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card review-card p-4 h-100">
+                    <div class="star-rating mb-3">
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                    </div>
+                    <p class="mb-3">Долго искала надёжного бухгалтера для своего бизнеса. Здесь нашла всё, что нужно: оперативность, точность и понятные объяснения по всем вопросам.</p>
+                    <hr />
+                    <div class="fw-bold">Фролова Мия</div>
+                    <div class="text-muted small">ИП Иванова М.С. — 3 октября 2024</div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card review-card p-4 h-100">
+                    <div class="star-rating mb-3">
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                    </div>
+                    <p class="mb-3">Рекомендую! Помогли восстановить учёт за несколько лет, подготовили к налоговой проверке. Всё прошло гладко благодаря их работе.</p>
+                    <hr />
+                    <div class="fw-bold">Лизунов Григорий</div>
+                    <div class="text-muted small">ООО "Строймастер" — 28 сентября 2024</div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card review-card p-4 h-100">
+                    <div class="star-rating mb-3">
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                    </div>
+                    <p class="mb-3">Перешли на аутсорсинг бухгалтерии год назад и ни разу не пожалели. Экономия времени и денег, и главное — уверенность в правильности учёта.</p>
+                    <hr />
+                    <div class="fw-bold">Луев Роман</div>
+                    <div class="text-muted small">ООО "Торговый дом" — 12 сентября 2024</div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card review-card p-4 h-100">
+                    <div class="star-rating mb-3">
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                    </div>
+                    <p class="mb-3">Профессионалы своего дела. Особенно ценю индивидуальный подход и готовность объяснить любые тонкости налогообложения.</p>
+                    <hr />
+                    <div class="fw-bold">Богачёва Александра</div>
+                    <div class="text-muted small">ИП Васильев И.А. — 5 сентября 2024</div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card review-card p-4 h-100">
+                    <div class="star-rating mb-3">
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-warning me-1"></i>
+                        <i class="fas fa-star text-secondary me-1"></i>
+                    </div>
+                    <p class="mb-3">Хорошая компания с опытными специалистами. Иногда бывают небольшие задержки с ответами, но в целом качество работы на высоте.</p>
+                    <hr />
+                    <div class="fw-bold">Каспер Виталий</div>
+                    <div class="text-muted small">ООО "Консалтинг плюс" — 22 августа 2024</div>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+
+@* Навигационные карточки удалены по запросу пользователя *@
 
     @* ===== CTA block like screenshot ===== *@
     <section class="cta-block">

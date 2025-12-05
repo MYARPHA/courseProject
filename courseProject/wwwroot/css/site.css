@@ -125,6 +125,17 @@ html {
     border: none;
 }
 
+/* Styled label that replaces native file input */
+.file-input-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: transparent;
+    color: var(--dark);
+    cursor: pointer;
+}
+.file-input-btn:hover { background: rgba(0,0,0,0.03); }
+
 .btn-primary {
     background: var(--primary);
     border-color: var(--primary);
@@ -367,6 +378,63 @@ body {
 /* Make all font-awesome icons black by default */
 .fa, .fas, .far, .fal, .fab {
     color: #000 !important;
+}
+
+/* CTA block: dark background with white text and uniform buttons */
+.cta-block {
+    background: #000;
+    color: #fff;
+    padding: 48px 0;
+}
+.cta-block h2, .cta-block p {
+    color: #fff;
+}
+.cta-block .btn {
+    min-width: 180px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 999px;
+}
+
+/* Reviews block styling */
+.reviews-section {
+    background: transparent;
+}
+.reviews-stats .h2 {
+    font-size: 2.25rem;
+    margin-bottom: 0.25rem;
+}
+.review-card {
+    border-radius: 12px;
+    padding: 1.25rem;
+}
+.star-rating i { font-size: 1rem; }
+.review-card p { color: var(--gray); }
+.review-card hr { border-color: rgba(0,0,0,0.06); margin: 0.75rem 0; }
+
+@media (max-width: 768px) {
+    .reviews-stats .h2 { font-size: 1.75rem; }
+}
+.cta-block .btn-cta {
+    background: #fff;
+    color: #000;
+}
+.cta-block .btn-cta i { color: #000 !important; }
+
+/* Ensure icons inside primary/header CTA buttons are white */
+.page-header .btn i, .cta-block .btn i, .btn-dark i, .btn-primary i, .btn-outline-dark i {
+    color: #fff !important;
+}
+
+/* Make header buttons and CTA buttons visually uniform */
+.page-header .btn, .page-header .btn-lg, .page-header .btn-lg .fa {
+    min-width: 180px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Soft powder-pink blurred background overlay */

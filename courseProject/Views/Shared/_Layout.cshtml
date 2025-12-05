@@ -235,17 +235,7 @@
         </nav>
     </header>
 
-    @* Demo credentials hint *@
-    <div class="container mt-3">
-        <div class="alert alert-secondary alert-dismissible fade show small" role="alert">
-            <div>
-                Demo accounts: Админ — <strong>admin@local / Admin123!</strong>;
-                Клиент — <strong>client@local / Client123!</strong>.
-                Используйте их для тестирования (токен JWT выдаётся через /api/user/auth/login).
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    </div>
+    @* Demo alert removed per user's request *@
 
     <!-- МОДАЛ АВТОРИЗАЦИИ -->
     <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
@@ -290,6 +280,8 @@
                         <button type="submit" class="btn btn-dark w-100">
                             <i class="fas fa-sign-in-alt me-2"></i> Войти
                         </button>
+
+                        <div class="mt-2 small text-muted">Примеры учётных записей: <strong>admin1@gmail.com / admin12</strong>, <strong>anton@gmail.com / anton1209</strong></div>
                     </form>
 
                     <hr class="my-3">
@@ -360,7 +352,7 @@
     <!-- ФУТЕР -->
     <footer>
         <div class="container text-center">
-            &copy; 2025 - <strong>courseProject</strong> -
+            &copy; 2025 - <strong>Financial Solutions</strong> -
             <a asp-area="" asp-controller="Home" asp-action="Privacy">Политика конфиденциальности</a>
         </div>
     </footer>
@@ -388,7 +380,7 @@
                     <div class="user-menu">
                         <div>
                             <div class="user-info">${userEmail}</div>
-                            <div class="user-role">${userRole === 'admin' ? '🛡️ Администратор' : '👤 Пользователь'}</div>
+                            <div class="user-role">${userRole === 'admin' ? 'Администратор' : 'Пользователь'}</div>
                         </div>
                         <a class="btn btn-outline-primary btn-sm ms-2" href="/Account/Profile">
                             <i class="fas fa-user-circle me-1"></i> Профиль
